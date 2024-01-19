@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+    <form id="loginForm">
+        <div>
+            <label>Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        <div>
+            <label>Password:</label>
+            <input type="password" id="password" required>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async () => {
+            var emailElement = document.getElementById("email")
+            var passwordElement = document.getElementById("password")
+
+            const dataObj = {
+                email: emailElement.value,
+                password: passwordElement.value
+            }
+
+            const response = await fetch("/login", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataObj),
+            })
+
+
+            const data = await response.json();
+            if (data.success) {
+                window.location.href = "/dashboard";
+            } else {
+                alert("Invalid credentials");
+            }
+        });
+    </script>
+</body>
+</html>

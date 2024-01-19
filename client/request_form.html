@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="app.js"></script>
+    <title>Fill-in Table</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <h1>Service Request - Department of Chemistry</h1>
+    <form action="submit.php" method="post">
+        <table>
+            <tr>
+                <td>Name *</td>
+                <td><input type="text" name="customer_name"></td>
+            </tr>
+            <tr>
+                <td>Lab/Office Number</td>
+                <td><input type="text" name="office_num"></td>
+            </tr>
+            <tr>
+                <td>Email *</td>
+                <td><input type="text" name="email"></td>
+            </tr>
+            <tr>
+                <td>Phone Number</td>
+                <td><input type="tel" name="phone_num" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"></td>
+            </tr>
+            <tr>
+                <td>Speed Chart *</td>
+                <td><input type="text" name="speed_chart"></td>
+            </tr>
+            <tr>
+                <td>Supervisor Name *</td>
+                <td><input type="text" name="supervisor_name"></td>
+            </tr>
+            <tr>
+                <td>Service Type *</td>
+                <td><input type="text" name="service_type"></td>
+            </tr>
+            <tr>
+                <td>Work Request *</td>
+                <td><input type="text" name="request_description"></td>
+            </tr>
+            <tr>
+                <td>Equipment Manufacturer and Model (If Applicable)</td>
+                <td><input type="text" name="manufacturer"></td>
+            </tr>
+        </table>
+        <input type="submit" name = 'submit' value="Submit">
+    </form>
+</body>
+</html>
