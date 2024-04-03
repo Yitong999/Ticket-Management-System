@@ -6,17 +6,17 @@ function request_form_module(){
 
 // ***** insert a new request record into a database table.
 request_form_module.prototype.create_request = function(db, name, room_id, email, phone, sp_chart, 
-                                                        supervisor_name, service_type, work_request, model, password){
+                                                        supervisor_name, service_type, work_request, model, id){
 
     return new Promise((resolve, reject) => {
         //Insert data into table
-        sql = `INSERT INTO requests(customer_name, office_num, email, phone_num, speed_chart, 
-            supervisor_name, service_type, request_description, manufacturer, status, open_time, close_time, password) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
+        sql = `INSERT INTO requests(id, customer_name, office_num, email, phone_num, speed_chart, 
+            supervisor_name, service_type, request_description, manufacturer, status, open_time, close_time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
         
         time = Date.now()
 
-        db.run(sql, [name, room_id, email, phone, sp_chart, 
-            supervisor_name, service_type, work_request, model, 'open', time, 0, password], (err) => {
+        db.run(sql, [id, name, room_id, email, phone, sp_chart, 
+            supervisor_name, service_type, work_request, model, 'open', time, 0], (err) => {
             if (err){
                 reject(err)
             } else {
@@ -291,6 +291,19 @@ request_form_module.prototype.find_note_of_ticket = function(db, id){
             }
         })
     })
+}
+
+request_form_module.prototype.isUniqueId = function(db, id){
+    return new Promise((resolve, reject) => {
+        sql = 'SELECT COUNT(*) AS count FROM requests WHERE id = ?'
+        db.get(sql, [id], (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(row.count === 0);
+          }
+        });
+      });
 }
 
 module.exports = request_form_module

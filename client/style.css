@@ -4,6 +4,12 @@ table, th, td {
     border:1px solid black;
 }
 
+.header {
+    /* display: flex; */
+    background-color: #ffffff;
+    padding: 10px;
+    border: none;
+}
 
 .app-menu {
     margin-bottom: 20px; /* Adds space below the app-menu */
@@ -18,8 +24,88 @@ table, th, td {
     margin-top: 20px; /* Adds space above the page-control */
 }
 
+/* Style for classification titles */
+.classification {
+    background-color: #800000; /* Maroon color */
+    color: #ffffff;
+    padding: 10px 15px;
+    margin: 0;
+    cursor: pointer;
+    border-top: 1px solid #ddd; /* Adds a border to the top of each classification */
+    border-bottom: 1px solid #ddd; /* Adds a border to the bottom of each classification */
+}
+
+/* Style for the question */
+.question {
+    background-color: #dd7373;
+    color: #000000;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd; /* Adds a separator between questions */
+}
+
+/* Style for the solution */
+.solution {
+    background-color: #ffffff;
+    color: #333333;
+    padding: 10px 15px;
+    display: none; /* Starts hidden until clicked */
+    border-bottom: 1px solid #ddd; /* Adds a separator between solution and the next question */
+}
+
+/* Expanded state for classification and questions */
+.expanded {
+    background-color: #a52a2a; /* A darker maroon for expanded state */
+}
 
 
+#addFaqForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust the space between form elements */
+    max-width: 500px; /* Adjust the width as needed */
+    margin: auto; /* Center the form on the page */
+}
+
+#addFaqForm input[type="text"],
+#addFaqForm textarea,
+#addFaqForm button {
+    padding: 10px;
+    border: 2px solid green; /* Adjust the color as needed */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 1rem; /* Adjust the size as needed */
+}
+
+#addFaqForm textarea {
+    height: 150px; /* Adjust the height as needed */
+    resize: vertical; /* Allow only vertical resizing */
+}
+
+#addFaqForm button {
+    background-color: white; /* Adjust the background color as needed */
+    color: green; /* Adjust the text color as needed */
+    cursor: pointer; /* Hand cursor on hover */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+}
+
+#addFaqForm button:hover {
+    background-color: green; /* Adjust the hover background color as needed */
+    color: white; /* Adjust the hover text color as needed */
+}
+
+/* Placeholder styling */
+#addFaqForm input::placeholder,
+#addFaqForm textarea::placeholder {
+    color: #aaa; /* Adjust the placeholder text color as needed */
+}
+
+/* Focus styling */
+#addFaqForm input:focus,
+#addFaqForm textarea:focus,
+#addFaqForm button:focus {
+    outline: none;
+    border-color: darkgreen; /* Adjust the focus border color as needed */
+}
 
 
 

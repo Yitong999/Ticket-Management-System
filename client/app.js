@@ -1,55 +1,6 @@
 
 var Service = {
     origin: window.location.origin,
-    getTicketById: function(id){
-        var xhrRequest = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            url = this.origin + '/form/retrieve/id/' + id
-
-            xhrRequest.open('GET', url)
-            xhrRequest.onload = function(){
-                if (xhrRequest.status == 200){
-                    resolve(JSON.parse(xhrRequest.response))
-                }else{
-                    reject((new Error(xhrRequest.status)))
-                }
-            }
-            xhrRequest.ontimeout = function() {
-                reject((new Error(xhrRequest.status)))
-            }
-            xhrRequest.onerror = function() {
-                reject((new Error(xhrRequest.status)))
-            };  
-            
-            xhrRequest.timeout = 500
-            xhrRequest.send()
-        })
-    },
-
-    getTicketByName: function(name){
-        var xhrRequest = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            url = this.origin + '/form/retrieve/name/' + name
-
-            xhrRequest.open('GET', url)
-            xhrRequest.onload = function(){
-                if (xhrRequest.status == 200){
-                    resolve(JSON.parse(xhrRequest.response))
-                }else{
-                    reject((new Error(xhrRequest.status)))
-                }
-            }
-            xhrRequest.ontimeout = function() {
-                reject((new Error(xhrRequest.status)))
-            }
-            xhrRequest.onerror = function() {
-                reject((new Error(xhrRequest.status)))
-            };  
-            
-            xhrRequest.timeout = 500
-            xhrRequest.send()
-        })
-    },
 
     createForm: function(form){
         var xhrRequest = new XMLHttpRequest()
@@ -77,76 +28,11 @@ var Service = {
         })
     },
 
-    updateForm: function(id, form){
-        var xhrRequest = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            url = this.origin + '/form/change/' + id
-
-            console.log('url: ', url)
-
-            xhrRequest.open('PUT', url);
-            xhrRequest.setRequestHeader('Content-Type', 'application/json')
-            xhrRequest.onload = function(){
-                if (xhrRequest.status == 200){
-                    resolve(xhrRequest.response)
-                }else{
-                    reject(new Error(xhrRequest.responseText))
-                }
-            }
-            xhrRequest.ontimeout = function() {
-                reject((new Error(xhrRequest.status)))
-            }
-            xhrRequest.onerror = function() {
-                reject((new Error(xhrRequest.status)))
-            };
-            console.log('form: ', form)
-            xhrRequest.send(JSON.stringify(form))
-            xhrRequest.timeout = 500;
-                
-        })
-    }
 
 
 }
 
-const ticketHTML = `
-<div id="login-container">
-        <h1>Track tickets</h1>
-        
-            <!-- Track by ID -->
-        <div class="form-row">
-            <label for="track_id">Track by ID:</label>
-            <input type="text" id="track_id" name="track_id" required>
-            <input type="submit" name="track-by-id-button" value="track">
-        </div>
 
-        <!-- Track by Name -->
-        <div class="form-row">
-            <label for="track_name">Track by Name:</label>
-            <input type="text" id="track_name" name="track_name" required>
-            <input type="submit" name="track-by-name-button" value="track">
-        </div>
-</div>
-
-<div class = "ticket-list">
-
-</div>
-`
-
-const ticketSearchByIdButtonsHTML = `
-              <div class="search-row">
-                <input type="text" id="search-ticket-by-id" placeholder="Ticket ID">
-                <button type="button" id="search-ticket-by-id-button" class="btn btn-primary btn-sm">Search</button>
-              </div>
-
-`
-
-const ticketSearchByNameButtonsHTML = `
-              <div class="search-row">
-                <input type="text" id="search-ticket-by-customer-name" placeholder="Ticket Name">
-                <button type="button" id="search-ticket-by-customer-name-button" class="btn btn-primary btn-sm">Search</button>
-              </div>
-`
 
 const formHTML = `
     <form>
@@ -209,12 +95,6 @@ const formSubmitHTML =
 </div>
 `
 
-const formUpdateHTML = 
-`
-<div class="search-row">
-    <button type="button" id="form-submit-button">Update</button>
-</div>
-`
 
 // Removes the contents of the given DOM element (equivalent to elem.innerHTML = '' but faster)
 function emptyDOM (elem){
@@ -228,125 +108,111 @@ function createDOM (htmlString){
     return template.content.firstChild;
 }
 
-
-class TicketView{
+class FAQView{
     constructor(){
         this.content_elem = document.querySelector('div.content')
         this.control_elem = document.querySelector('div.page-control')
-    }
 
-    setPrompt(){
+        this.faq = []
+        // this.faqs = [
+        //     {
+        //         "Q_id": 1,
+        //         "classification": "IT",
+        //         "question": "How to factory reset win10 OS?",
+        //         "solution": "To reset your PC, go to Start"
+        //     },
+        //     {
+        //         "Q_id": 2,
+        //         "classification": "IT",
+        //         "question": "How to install linux ?",
+        //         "solution": "Windows Subsystem for Linux (WSL), Bare metal Linux; or create a Virtual Machine (VM) to run Linux locally or in the cloud."
+        //     },
+        //     {
+        //         "Q_id": 3,
+        //         "classification": "CHEM",
+        //         "question": "How to install linux ?",
+        //         "solution": "Windows Subsystem for Linux (WSL), Bare metal Linux; or create a Virtual Machine (VM) to run Linux locally or in the cloud."
+        //     }
+        // ]
+    }
+    
+    
+
+    async setContent(){
+        let url = origin + '/get-all-faqs'
+        const response = await fetch(url)
+        const faqs = await response.json()
         emptyDOM(this.content_elem)
 
         var prompt_dom = createDOM(
             `
             <h1>
             Please check FAQs to most common questions!
+            <br>
+            <br>
             </h1>
             `
         )
 
         this.content_elem.appendChild(prompt_dom)
-    }
-    // id  |  service type | open time
-    setTitle(){
-        emptyDOM(this.content_elem)
 
-        var ticket_list_dom = createDOM(
-            `
-            <table style="width:100%" class = "ticket-list">
-            
-            </table> 
-            `
-        )
+        // Clear the content element first
+        // this.content_elem.innerHTML = '';
+        
+        // Group faqs by classification
+        const faqsByClassification = faqs.reduce((acc, faq) => {
+            if (!acc[faq.classification]) acc[faq.classification] = [];
+            acc[faq.classification].push(faq);
+            return acc;
+        }, {});
 
-        this.content_elem.appendChild(ticket_list_dom)
+        // Create HTML for each classification
+        Object.entries(faqsByClassification).forEach(([classification, faqs]) => {
+            // Create the classification element
+            let classificationElem = document.createElement('div');
+            classificationElem.textContent = classification;
+            classificationElem.classList.add('classification');
 
-        var list_elem = this.content_elem.querySelector('table.ticket-list')
-        var newList = createDOM(
-            `
-            <tr>
-                <th>id</th>
-                <th>service type</th>
-                <th>open time</th>
-            </tr>
-            
-            `
-        ) 
+            // Add click event listener for classification
+            classificationElem.addEventListener('click', () => {
+                // Toggle the display of the FAQ questions under this classification
+                const isVisible = classificationElem.classList.contains('expanded');
+                classificationElem.classList.toggle('expanded', !isVisible);
+                questionContainer.style.display = isVisible ? 'none' : 'block';
+            });
 
-        list_elem.appendChild(newList)
-    }
+            // Create a container for the questions
+            let questionContainer = document.createElement('div');
+            questionContainer.style.display = 'none'; // Start with it not displayed
 
-    setTicket(ticket){
-        var list_elem = this.content_elem.querySelector('table.ticket-list')
+            // Create HTML for each question under this classification
+            faqs.forEach(faq => {
+                let questionElem = document.createElement('div');
+                questionElem.textContent = 'Q: ' + faq.question;
+                questionElem.classList.add('question');
 
-        var newList = createDOM(
-            `
-            
-                <tr>
-                    <th><a href="#ticket/${ticket.id}">${ticket.id}</a></th>
-                    <th>${ticket.service_type}</th>
-                    <th>${new Date(ticket.open_time).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}</th>
-                </tr>
-            
-            `
-        )
-        list_elem.appendChild(newList)
-    }
+                // Add click event listener for question
+                questionElem.addEventListener('click', () => {
+                    // Toggle the display of the solution
+                    const isVisible = solutionElem.style.display === 'block';
+                    solutionElem.style.display = isVisible ? 'none' : 'block';
+                });
 
-    setControl(){
-        emptyDOM(this.control_elem)
-        this.control_elem.appendChild(createDOM(ticketSearchByIdButtonsHTML))
-        this.control_elem.appendChild(createDOM(ticketSearchByNameButtonsHTML))
+                // Create the solution element
+                let solutionElem = document.createElement('div');
+                solutionElem.textContent = 'A: ' + faq.solution;
+                solutionElem.style.display = 'none'; // Start with it not displayed
+                solutionElem.classList.add('solution');
 
-        // Search by ID modole
-        this.ticket_id_input_elem = this.control_elem.querySelector('#search-ticket-by-id')
-        this.ticket_id_search_button_elem = this.control_elem.querySelector('#search-ticket-by-id-button')
+                // Append the question and solution elements
+                questionContainer.appendChild(questionElem);
+                questionContainer.appendChild(solutionElem);
+            });
 
-        this.ticket_id_search_button_elem.addEventListener('click', () => {
-            var id = this.ticket_id_input_elem.value
-            this.ticket_id_input_elem.value = ''
-
-            if (id == ''){
-                window.alert('Ticket ID is required!')
-            }else{
-                Service.getTicketById(id).then(
-                (ticket) => {
-                    console.log('find ticket with id: ', ticket.id)
-
-                    this.setTitle()
-                    this.setTicket(ticket)
-                })
-            }
-            
-        })
-
-        // Search by Name module        
-        this.ticket_name_input_elem = this.control_elem.querySelector('#search-ticket-by-customer-name')
-        this.ticket_name_search_button_elem = this.control_elem.querySelector('#search-ticket-by-customer-name-button')
-
-        this.ticket_name_search_button_elem.addEventListener('click', () => {
-            var name = this.ticket_name_input_elem.value
-            this.ticket_name_input_elem.value = ''
-
-            if (name == ''){
-                window.alert('Ticket name is requred!')
-            }else{
-                Service.getTicketByName(name).then(
-                    (tickets_list) => {                    
-                        this.setTitle()
-                        console.log('find ', tickets_list.length, ' tickets')
-                        for (const ticket of tickets_list){
-                            this.setTicket(ticket)
-                        }
-                            
-                    }
-                )
-            }
-        }
-    
-        )
-
+            // Append the classification and its questions container
+            this.content_elem.appendChild(classificationElem);
+            this.content_elem.appendChild(questionContainer);
+        });
     }
 }
 
@@ -411,6 +277,42 @@ class TrackFormView{
         )
     }
 
+    // Generate 5 digits ID
+    async IDgenerator(){
+        let uniqueId = Math.floor(10000 + Math.random() * 90000);
+        
+        let isUnique = await this.isUniqueId(uniqueId)
+        while (!isUnique){
+            uniqueId = Math.floor(10000 + Math.random() * 90000);
+            isUnique = true;
+        }
+
+        console.log('after ID: ', uniqueId)
+
+        return uniqueId;
+            
+    }
+
+    async isUniqueId(id) {
+        try{
+            let url = Service.origin + '/ticket/checkId?id=' + id
+
+            console.log('url: ' + url)
+            const response = await fetch(url)
+
+            const data = await response.json()
+            console.log('data: ', data)
+
+            return data.unique
+            // return data.unique
+        } catch (error) {
+            console.error('Error checking ID:', error);
+            throw error; // Optional: depends on how you want to handle errors
+        }
+        
+
+    }
+
     setControl(instruction){
         // if (instruction == 'submit'){
         //     emptyDOM(this.content_elem)
@@ -418,14 +320,22 @@ class TrackFormView{
         emptyDOM(this.control_elem)
         if (instruction == 'submit'){
             this.control_elem.appendChild(createDOM(formSubmitHTML))
-        }else{
-            this.control_elem.appendChild(createDOM(formUpdateHTML))
         }
         
-        console.log(this.control_elem)
-
-        this.control_elem.addEventListener('click', () => {
+        
+        
+        this.control_elem.addEventListener('click', async () => {
             console.log('clicking ' + instruction)
+            const uniqueId = await this.IDgenerator()
+            const formFields = this.content_elem.querySelectorAll('input, select, textarea');
+                formFields.forEach(field => {
+                    if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
+                        // field.readOnly = true; // TODO: Do this only if all input fields meet the requirement
+                    } else if (field.tagName === 'SELECT') {
+                        field.disabled = true;
+                    }
+                })
+
             this.customer_name = this.content_elem.querySelector('input[name="customer_name"]').value
             this.office_num = this.content_elem.querySelector('input[name="office_num"]').value
             this.email = this.content_elem.querySelector('input[name="email"]').value
@@ -436,7 +346,7 @@ class TrackFormView{
             this.request_description = this.content_elem.querySelector('textarea[name="request_description"]').value
             this.manufacturer = this.content_elem.querySelector('input[name="manufacturer"]').value
             
-
+            console.log("id: ", uniqueId)
             console.log("customer_name:", this.customer_name)
             console.log("office_num:", this.office_num)
             console.log("email:", this.email)
@@ -450,6 +360,7 @@ class TrackFormView{
             // Pass all error checkers
             if (this.errorCheck()){
                 var form = {
+                    "id": uniqueId,
                     "customer_name": this.customer_name,
                     "office_num": this.office_num,
                     "email": this.email,
@@ -471,7 +382,8 @@ class TrackFormView{
                                 window.alert("You have successfully submitted the ticket. Please click the print button to print the page! ")
                                 
                                 let successMessage = document.createElement("div");
-                                successMessage.innerHTML = "<strong style='color:green;' >Form submitted successfully!</strong>";
+                                console.log('unique ID: ', uniqueId)
+                                successMessage.innerHTML = `<strong style='color:green;' >Ticket #${uniqueId} is submitted successfully! Please print the page for reference. We will email you once the ticket is solved or we need further information. Thanks.</strong>`;
                                 
                                 
                                 // <br><button onclick='printPage()'>Print this page</button>";
@@ -501,18 +413,7 @@ class TrackFormView{
                             console.log(err)
                         }
                     )
-                } else{
-                    Service.updateForm(this.id, form).then(
-                        (resolve) => {
-                            console.log('pass')
-                            console.log(resolve)
-                        },
-                        (err) => {
-                            console.log(err)
-                        }
-                    )
-                }
-                
+                }                 
             }
         })
     }
@@ -544,69 +445,21 @@ class TrackFormView{
 }
 
 function main(){
-    var ticketView = new TicketView()
+    var faqView = new FAQView()
     var formView = new TrackFormView()
 
     function renderRoute(){
         var url = window.location.hash
-        console.log('url: ', url)
-        
-        var ticket_id_pattern = "#ticket/[0-9]+"
-        var ticket_id = url.substring(8)
-
-
 
         // Submit Form Page
         if (url == '#form'){
-            console.log('form')
-
             formView.setForm()
             formView.setControl('submit')
         }
 
-        // Update Form Page
-        else if (url.match(ticket_id_pattern)){
-            console.log('ticket_id: ', ticket_id)
-
-            // Define a function to prompt for the password and check it
-            function promptForPassword() {
-                var userPassword = prompt("Please enter your one time password in your email to continue:");
-
-                // If the prompt wasn't cancelled (user pressed OK)
-                if (userPassword !== null) {
-                    Service.getTicketById(ticket_id).then(
-                        (ticket) => {
-                            if (userPassword === ticket.password) {
-                                formView.id = ticket_id
-                                // ticketView.setId(ticket_id)
-
-                                formView.displayFilled(ticket_id)
-                                formView.setControl('update')
-                            } else {
-                                window.alert('Incorrect password, please try again.');
-                                promptForPassword(); // Recursively call the promptForPassword function
-                            }
-                        }
-                    ).catch((error) => {
-                        // Handle potential errors, such as the ticket not being found
-                        console.error(error);
-                        window.alert('An error occurred while verifying the password.');
-                    });
-                } else {
-                    // User cancelled the prompt, handle according to your needs
-                    console.log('Password prompt cancelled by user.');
-                }
-            }
-
-            // Call the function for the first time
-            promptForPassword();
-                    
-        }
-
-        // Track page
+        // FAQ page
         else {
-            ticketView.setPrompt()
-            ticketView.setControl()
+            faqView.setContent()
         }
     }
     window.addEventListener('hashchange', renderRoute)
